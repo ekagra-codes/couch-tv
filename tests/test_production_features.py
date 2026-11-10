@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import unittest
 
@@ -42,26 +43,35 @@ class TestProductionFeatures(unittest.TestCase):
         self.assertEqual(len(res["inputs"]), 1)
         self.assertEqual(res["inputs"][0]["label"], "PlayStation 5")
 
-    def test_hidden_watch_next_simulation(self):
-        """Simulate Watch Next dismissal using ID and composite (pkg|title) signature."""
-        cursor_rows = [
-            {"id": "101", "pkg": "com.netflix.ninja", "title": "Stranger Things"},
-            {"id": "102", "pkg": "com.netflix.ninja", "title": "The Crown"},
-            {"id": "103", "pkg": "in.startv.hotstar", "title": "Special Ops"},
-        ]
+    def test_skip_watch_next_default_empty(self):
+        """Verify skip_watch_next is empty by default, and only populates if configured."""
+        res_default = config._home({})
+        self.assertEqual(res_default["skip_watch_next"], [])
 
-        # User dismissed row 101 by ID, and Special Ops by composite key
-        hidden_ids = {"101", "in.startv.hotstar|Special Ops"}
+        res_configured = config._home({
+            "skip_watch_next": ["com.tcl.browser", "com.example.spam", "com.tcl.browser", "invalid;pkg!"]
+        })
+        self.assertEqual(res_configured["skip_watch_next"], ["com.tcl.browser", "com.example.spam"])
 
-        remaining = []
-        for r in cursor_rows:
-            composite = f"{r['pkg']}|{r['title']}"
-            if r["id"] in hidden_ids or composite in hidden_ids:
-                continue
-            remaining.append(r)
+    def test_watch_next_per_app(self):
+        """Verify watch_next_per_app defaults to 5 and clamps between 1 and 20."""
+        self.assertEqual(config._home({})["watch_next_per_app"], 5)
+        self.assertEqual(config._home({"watch_next_per_app": 10})["watch_next_per_app"], 10)
+        self.assertEqual(config._home({"watch_next_per_app": 0})["watch_next_per_app"], 1)
+        self.assertEqual(config._home({"watch_next_per_app": 99})["watch_next_per_app"], 20)
 
-        self.assertEqual(len(remaining), 1)
-        self.assertEqual(remaining[0]["title"], "The Crown")
+    def test_home_config_tool_serialization(self):
+        """Verify home-config.py correctly serializes home settings to JSON."""
+        root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+        res = subprocess.run(
+            [sys.executable, os.path.join(root, "tv-home", "tools", "home-config.py"), "--json"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        self.assertIn('"home"', res.stdout)
+        self.assertIn('"skip_watch_next"', res.stdout)
+        self.assertIn('"watch_next_per_app"', res.stdout)
 
 
 if __name__ == "__main__":
