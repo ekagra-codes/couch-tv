@@ -162,6 +162,8 @@ main { position: relative; z-index: 1; height: 100%; }
 
 /* Bottom controls */
 .controls { display: flex; gap: 10px; align-items: center; }
+.controls .type-key { color: #f5a623; }
+.controls .type-key:active { background: rgba(245, 166, 35, 0.2); }
 .volume { flex: 1; height: var(--ctl); border-radius: calc(var(--ctl) / 2); display: flex; align-items: stretch; overflow: hidden; }
 .volume button { width: 48px; display: grid; place-items: center; flex: none; touch-action: pan-x; }
 .volume .vol-mid { flex: 1; width: auto; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; color: var(--ink-2); }

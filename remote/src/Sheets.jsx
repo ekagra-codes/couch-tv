@@ -496,3 +496,39 @@ const ShareGlyph = () => (
     <path d="M12 3v12M8 7l4-4 4 4M6 11H5v10h14V11h-1" />
   </svg>
 );
+
+export const TypeSheet = forwardRef(function TypeSheet({ open, onClose, onText }, ref) {
+  const [typed, setTyped] = useState('');
+  const sheetEl = useRef(null);
+  const inputEl = useRef(null);
+  const setRefs = (el) => { inputEl.current = el; if (typeof ref === 'function') ref(el); else if (ref) ref.current = el; };
+  const closeDrag = usePushUp(sheetEl, onClose);
+
+  useEffect(() => {
+    if (open) {
+      setTyped('');
+      setTimeout(() => inputEl.current?.focus({ preventScroll: true }), 50);
+    }
+  }, [open]);
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (typed.trim()) {
+      tick();
+      onText(typed.trim());
+      setTyped('');
+      onClose();
+    }
+  };
+
+  return (
+    <Sheet ref={sheetEl} open={open} onClose={onClose} title={t('type_on_tv')} className="type-sheet" closeDrag={closeDrag}>
+      <form className="ask-field glass" onSubmit={submit}>
+        <input ref={setRefs} value={typed} onChange={(e) => setTyped(e.target.value)}
+          placeholder={t('type_placeholder')} enterKeyHint="send" aria-label={t('type_placeholder')} autoFocus />
+        <button type="submit" className="round solid small" aria-label={t('send_to_tv')} disabled={!typed.trim()}><Ic.Send size={18} /></button>
+      </form>
+      <p className="note">{t('type_note')}</p>
+    </Sheet>
+  );
+});

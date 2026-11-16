@@ -378,7 +378,7 @@ function useRepeat(fn) {
 }
 
 // The bottom row, in thumb reach: back, home, play or pause, volume. Like Apple's TV Remote.
-export function Controls({ tv, onKey, onVolume }) {
+export function Controls({ tv, onKey, onVolume, onType }) {
   const v = tv?.volume;
   const st = tv?.playing?.state;
   const upR = useRepeat(() => onVolume('up'));
@@ -391,6 +391,11 @@ export function Controls({ tv, onKey, onVolume }) {
         onClick={() => { tick(); onKey('play_pause'); }}>
         {st === 'playing' ? <Ic.Pause /> : st === 'paused' ? <Ic.Play /> : <Ic.PlayPause />}
       </button>
+      {onType && (
+        <button className="round big glass type-key" aria-label={t('type_on_tv')} onClick={() => { tick(); onType(); }}>
+          <Ic.Keyboard />
+        </button>
+      )}
       <div className="volume glass" role="group" aria-label={t('volume')}>
         <button aria-label="Volume down" {...downR}><Ic.Minus /></button>
         <button className="vol-mid" aria-label={v?.muted ? 'Unmute' : 'Mute'} onClick={() => { tick(); onVolume('mute'); }}>

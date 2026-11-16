@@ -30,6 +30,12 @@ Voice works through your phone keyboard's own mic key, and the remote sends the 
 
 Ask is a short chat. Claude may offer up to 3 quick replies under its answer, and tapping one sends it.
 
+## Typing on the TV
+
+The remote includes an amber keyboard button on the main controls row (next to Back, Home, and Play/Pause, #216). Tapping it opens a typing sheet with an auto-focused text box to type directly into search fields on the TV.
+
+Note that Android's `input text` interface accepts ASCII text. Complex or non-Latin scripts (such as Thai, Chinese, Korean, or Arabic) must be entered using the TV's own on-screen keyboard.
+
 If the computer restarts or the bridge is updated, the remote notices the next time you open it and
 switches to the new version by itself.
 
